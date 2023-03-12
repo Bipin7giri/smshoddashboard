@@ -1,10 +1,4 @@
-import {
-  mdiChartTimelineVariant,
-  mdiGithub,
-  mdiAccount,
-  mdiHomeAccount,
-  mdiHoopHouse,
-} from '@mdi/js'
+import { mdiChartTimelineVariant, mdiHoopHouse } from '@mdi/js'
 // eslint-disable-next-line @next/next/no-document-import-in-page
 import React, { useEffect, useState } from 'react'
 import type { ReactElement } from 'react'
@@ -174,7 +168,8 @@ const Departments = () => {
           setSemesterName('')
         })
         .catch((err) => {
-          openNotification(err.message)
+          setCurrent(current)
+          openNotification(err?.response?.data?.details[0]?.message)
         })
     }
     if (current === 1) {
@@ -217,7 +212,7 @@ const Departments = () => {
       <SectionMain>
         <SectionTitleLineWithButton icon={mdiChartTimelineVariant} title="Semester" main>
           <BaseButton
-            href="/departmentlist"
+            href="/semesterlist"
             icon={mdiHoopHouse}
             label="Semester List"
             color="lightDark"
@@ -246,58 +241,6 @@ const Departments = () => {
             )}
           </div>
         </>
-        <CardBox>
-          <Formik
-            initialValues={{
-              name: '',
-              hod: '',
-            }}
-            onSubmit={(values) => {
-              if (!values.name || !hod) {
-                openNotification('Required filed', 'error')
-                return
-              }
-              api
-                .post('/semester', {
-                  name: values.name,
-                  hod: hod,
-                })
-                .then((res) => {
-                  openNotification('successfully added')
-                })
-                .catch((err) => {
-                  openNotification(err.message)
-                })
-            }}
-          >
-            <Form>
-              <FormField label="Grouped with icons" icons={[mdiHomeAccount, mdiAccount]}>
-                <Field name="name" placeholder="name" />
-                {/* <Field type="hod" name="bod" placeholder="hod" /> */}
-                <Select
-                  showSearch
-                  style={{ width: 300 }}
-                  placeholder="Search to Select"
-                  optionFilterProp="children"
-                  filterOption={(input, option) => (option?.label ?? '').includes(input)}
-                  filterSort={(optionA, optionB) =>
-                    (optionA?.label ?? '')
-                      .toLowerCase()
-                      .localeCompare((optionB?.label ?? '').toLowerCase())
-                  }
-                  options={users}
-                  onChange={(e: any) => {
-                    setHod(e)
-                  }}
-                />
-              </FormField>
-              <BaseDivider />
-              <BaseButtons>
-                <BaseButton type="submit" color="info" label="Submit" />
-              </BaseButtons>
-            </Form>
-          </Formik>
-        </CardBox>
       </SectionMain>
     </>
   )

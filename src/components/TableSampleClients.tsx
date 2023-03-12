@@ -5,23 +5,21 @@ import { Client } from '../interfaces'
 import BaseButton from './BaseButton'
 import BaseButtons from './BaseButtons'
 import CardBoxModal from './CardBoxModal'
-import { Modal} from 'antd'
+import { Modal } from 'antd'
 import { useAppSelector } from '../stores/hooks'
-import { Avatar} from 'antd'
+import { Avatar } from 'antd'
 import { Select } from 'antd'
 import { GetAccessToken } from '../helper/getAccessToken'
 import { api } from '../pages/api/axios'
 import moment from 'moment'
 import { notification } from 'antd'
 
-
 const { confirm } = Modal
 
 const key = 'updatable'
 const TableSampleClients = () => {
-
   const { searchData } = useAppSelector((state) => state.search)
-  const { clients,mutate } = useSampleClients(searchData)
+  const { clients, mutate } = useSampleClients(searchData)
 
   const openNotification = (message: string) => {
     notification.open({
@@ -39,7 +37,7 @@ const TableSampleClients = () => {
           })
           .then((res) => {
             openNotification(res.data.message)
-            mutate(null);
+            mutate(null)
           })
           .catch((err) => {
             openNotification(err.message)
@@ -52,10 +50,7 @@ const TableSampleClients = () => {
     })
   }
 
-
   const [isModalOpen, setIsModalOpen] = useState(false)
-
-
 
   const perPage = 10
 
@@ -124,7 +119,7 @@ const TableSampleClients = () => {
       })
       .then((res) => {
         openNotification(res?.data?.message)
-        mutate(null);
+        mutate(null)
       })
       .catch((err) => {
         alert(err)
@@ -157,20 +152,6 @@ const TableSampleClients = () => {
                       <li className="text-sm">Email : {userById[0]?.email}</li>
                       <li className="text-sm">PhoneNumber : {userById[0]?.phoneNumber}</li>
                       <li className="text-sm">Address : {userById[0]?.address}</li>
-                      {userById[0]?.hod.length === 1 && (
-                        <li className="text-sm">Department Hod : {userById[0]?.hod[0]?.name}</li>
-                      )}
-
-                      <li className="text-sm">
-                        Roles :{' '}
-                        {userById[0]?.roleId?.roles?.map((item: string) => {
-                          return (
-                            <li className="inline px-1" key={item}>
-                              {item}
-                            </li>
-                          )
-                        })}
-                      </li>
                     </ul>
                   </div>
                   {/* End: /typography/_h3.antlers.html */}
@@ -189,7 +170,7 @@ const TableSampleClients = () => {
             <th>email</th>
             <th>Address</th>
             <th>Contact</th>
-            <th className="flex justify-center py-5">Role</th>
+            <th>Status</th>
             <th>Joined</th>
             <th>Actions</th>
           </tr>
@@ -209,33 +190,15 @@ const TableSampleClients = () => {
               <td data-label="address">{client.address}</td>
               <td data-label="email">{client.phoneNumber}</td>
               <td data-label="email">
-                {client.blocked === true && (
-                  <span className="absolute -top-1 -left-10  p-1 translate-x-1/2 -translate-y-1/2 bg-red-500 rounded-full text-sm text-white">
+                {client.blocked === true ? (
+                  <span className="p-2 translate-x-1/2 -translate-y-1/2 bg-red-500 rounded-full text-sm text-white">
                     Blocked
                   </span>
+                ) : (
+                  <span className=" p-2 translate-x-1/2 -translate-y-1/2 bg-green-500 rounded-full text-sm text-white">
+                    Active
+                  </span>
                 )}
-
-                <div className="flex">
-                  <div>
-                    <Select
-                      showSearch
-                      defaultValue={client?.roleId?.name.toUpperCase()}
-                      style={{ width: 200 }}
-                      placeholder="Search to Select"
-                      optionFilterProp="children"
-                      filterOption={(input, option) => (option?.label ?? '').includes(input)}
-                      filterSort={(optionA, optionB) =>
-                        (optionA?.label ?? '')
-                          .toLowerCase()
-                          .localeCompare((optionB?.label ?? '').toLowerCase())
-                      }
-                      options={roles}
-                      onChange={(e: any) => {
-                        changeRole(e, client.id)
-                      }}
-                    />
-                  </div>
-                </div>
               </td>
               <td data-label="address">
                 <span className="text-gray-700">{moment(client.createdAt).fromNow()}</span>

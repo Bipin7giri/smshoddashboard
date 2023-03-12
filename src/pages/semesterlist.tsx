@@ -1,7 +1,7 @@
 import { mdiEye, mdiTrashCan } from '@mdi/js'
 import React, { ReactElement, useEffect, useState } from 'react'
-import { useDepartments, useSampleClients } from '../hooks/sampleData'
-import { Client, Department } from '../interfaces'
+import { useDepartments, useSampleClients, useSemester } from '../hooks/sampleData'
+import { Client, Department, Semester } from '../interfaces'
 import BaseButton from '../components/BaseButton'
 import BaseButtons from '../components/BaseButtons'
 import CardBoxModal from '../components/CardBoxModal'
@@ -18,11 +18,12 @@ import CardBox from '../components/CardBox'
 import SectionMain from '../components/SectionMain'
 const { confirm } = Modal
 import { Menu, Dropdown } from 'antd'
+import { useRouter } from 'next/router'
 const key = 'updatable'
 const SemesterList = () => {
   const { searchData } = useAppSelector((state) => state.search)
-  const { departments, isError, mutate } = useDepartments()
-
+  const { semesters, isLoading, isError, mutate } = useSemester()
+  const router = useRouter()
   const openNotification = (message: string) => {
     notification.open({
       message: message,
@@ -58,9 +59,9 @@ const SemesterList = () => {
 
   const [currentPage, setCurrentPage] = useState(0)
 
-  const departmentPaginate = departments?.slice(perPage * currentPage, perPage * (currentPage + 1))
+  const semesterPagination = semesters?.slice(perPage * currentPage, perPage * (currentPage + 1))
 
-  const numPages = departments?.length / perPage
+  const numPages = semesters?.length / perPage
 
   const pagesList = []
 
@@ -80,7 +81,7 @@ const SemesterList = () => {
   const [semester, setSemester] = useState([])
 
   useEffect(() => {
-    const data = departments?.semesterId
+    const data = semesters?.semesterId
 
     const tempSemester = []
     data?.map((sem) => {
@@ -111,9 +112,8 @@ const SemesterList = () => {
           <table>
             <thead>
               <tr>
-                <th>Name</th>
-                <th>HOD</th>
                 <th>Semester</th>
+                <th>Subjects</th>
                 <th>Created</th>
                 <th>Actions</th>
                 {/* <th>email</th>
@@ -124,21 +124,29 @@ const SemesterList = () => {
                 <th>Actions</th> */}
               </tr>
             </thead>
+            {/* {JSON.stringify(semesterPagination)} */}
             <tbody>
-              {departmentPaginate?.map((department: Department) => (
-                <tr key={department.id} className="relative">
-                  <td data-label="name">{department.name}</td>
-                  <td data-label="email">{department.hod.email}</td>
+              {semesterPagination?.map((semester: Semester) => (
+                <tr key={semester.id} className="relative">
+                  <td data-label="name">{semester.name}</td>
                   <td data-label="email">
                     <div className="flex">
                       <div>
                         <Dropdown
                           overlay={
                             <Menu>
-                              {department.semesterId.map((item, id) => {
+                              {semester.subjects.map((item, id) => {
                                 return (
                                   <>
-                                    <Menu.Item key="0">{item.name}</Menu.Item>
+                                    <Menu.Item
+                                      onClick={(e) => {
+                                        router.push(`/subjects/${item.id}`)
+                                        alert(item.id)
+                                      }}
+                                      key="0"
+                                    >
+                                      {item.subject_name}
+                                    </Menu.Item>
                                   </>
                                 )
                               })}
@@ -148,23 +156,25 @@ const SemesterList = () => {
                         >
                           <a
                             className="text-blue-400 hover:cursor-pointer"
-                            onClick={(e) => e.preventDefault()}
+                            onClick={(e) => {
+                              e.preventDefault()
+                            }}
                           >
-                            Semester List
+                            Subject List
                           </a>
                         </Dropdown>
                       </div>
                     </div>
                   </td>
                   <td data-label="address">
-                    <span className="text-gray-700">{moment(department.createdAt).fromNow()}</span>
+                    <span className="text-gray-700">{moment(semester.createdAt).fromNow()}</span>
                   </td>
                   <td className="before:hidden lg:w-1 whitespace-nowrap">
                     <BaseButtons type="justify-start lg:justify-end" noWrap>
                       <BaseButton
                         color="danger"
                         icon={mdiTrashCan}
-                        onClick={() => showConfirm(department.id)}
+                        onClick={() => showConfirm(semester.id)}
                         small
                       />
                     </BaseButtons>

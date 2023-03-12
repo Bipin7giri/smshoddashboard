@@ -4,13 +4,13 @@ import { fetcher } from '../pages/api/axios'
 
 export const useSampleClients = (search?: string) => {
   const { data, error, mutate } = useSWR(
-    `/auth/allusers?search=${encodeURIComponent(search)}`,
+    `/hod/department/student?search=${encodeURIComponent(search)}`,
     fetcher
   )
 
   return {
     mutate,
-    clients: data ?? [],
+    clients: data?.userId ?? [],
     isLoading: !error && !data,
     isError: error,
   }
@@ -31,6 +31,16 @@ export const useSemester = () => {
   return {
     mutate,
     semesters: data ?? [],
+    isLoading: !error && !data,
+    isError: error,
+  }
+}
+
+export const useSubjectById = (id: any) => {
+  const { data, error, mutate } = useSWR(`/hod/subject/${id}`, fetcher)
+  return {
+    mutate,
+    subject: data ?? {},
     isLoading: !error && !data,
     isError: error,
   }

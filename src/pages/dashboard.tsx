@@ -12,7 +12,9 @@ import CardBox from '../components/CardBox'
 import { sampleChartData } from '../components/ChartLineSample/config'
 import TableSampleClients from '../components/TableSampleClients'
 import { getPageTitle } from '../config'
-import { Card, notification } from 'antd'
+import { Button, Card, Modal, notification, Upload, message } from 'antd'
+import { UploadOutlined } from '@ant-design/icons'
+import type { UploadProps } from 'antd'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -27,6 +29,7 @@ import {
 import { Bar, Doughnut, Pie } from 'react-chartjs-2'
 import PieChart from '../components/charts/PieChart'
 import DoughnutChart from '../components/charts/DoughnutChart'
+import { GetAccessToken } from '../helper/getAccessToken'
 
 ChartJS.register(
   CategoryScale,
@@ -133,17 +136,74 @@ const Dashboard = () => {
 
     setChartData(sampleChartData())
   }
+  const [open, setOpen] = useState(false)
+  const [confirmLoading, setConfirmLoading] = useState(false)
+  const [modalText, setModalText] = useState('Content of the modal')
+
+  const showModal = () => {
+    setOpen(true)
+  }
+
+  const handleOk = () => {
+    setModalText('The modal will be closed after two seconds')
+    setConfirmLoading(true)
+    setTimeout(() => {
+      setOpen(false)
+      setConfirmLoading(false)
+    }, 2000)
+  }
+
+  const handleCancel = () => {
+    console.log('Clicked cancel button')
+    setOpen(false)
+  }
+
+  const props: UploadProps = {
+    name: 'students',
+    action: 'https://sms-twox.onrender.com/api/hod/addBulkStudent',
+    headers: {
+      authorization: GetAccessToken(),
+    },
+    onChange(info) {
+      if (info.file.status !== 'uploading') {
+        console.log(info.file, info.fileList)
+      }
+      if (info.file.status === 'done') {
+        message.success(`${info.file.name} file uploaded successfully`)
+      } else if (info.file.status === 'error') {
+        message.error(`${info.file.name} file upload failed.`)
+      }
+    },
+  }
 
   return (
     <>
       <Head>
         <title>{getPageTitle('Dashboard')}</title>
       </Head>
+      <Modal
+        okButtonProps={{
+          style: { backgroundColor: 'blue' },
+        }}
+        title="Add Student"
+        open={open}
+        onOk={handleOk}
+        confirmLoading={confirmLoading}
+        onCancel={handleCancel}
+      >
+        <Upload {...props}>
+          <Button icon={<UploadOutlined />}>Click to Upload</Button>
+        </Upload>
+      </Modal>
       <SectionMain>
-        <SectionTitleLineWithButton
-          icon={mdiBookEducation}
-          title="Department"
-        ></SectionTitleLineWithButton>
+        <SectionTitleLineWithButton icon={mdiBookEducation} title="Department">
+          <Button
+            className="bg-[#3b82f6] text-white hover:text-white hover:bg-blue-300"
+            onClick={showModal}
+          >
+            Add Bulk Student
+          </Button>
+        </SectionTitleLineWithButton>
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 mb-6">
           {semesters?.map((semester: Semester) => (
             <CardBoxWidget
