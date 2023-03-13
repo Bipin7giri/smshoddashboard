@@ -10,7 +10,7 @@ import { Client, Department, Semester } from '../../interfaces'
 import BaseButton from '../../components/BaseButton'
 import BaseButtons from '../../components/BaseButtons'
 import CardBoxModal from '../../components/CardBoxModal'
-import { Modal } from 'antd'
+import { Button, Input, Modal } from 'antd'
 import { useAppSelector } from '../../stores/hooks'
 import { Avatar } from 'antd'
 import { Select } from 'antd'
@@ -26,13 +26,35 @@ import { Menu, Dropdown } from 'antd'
 import { useRouter } from 'next/router'
 import CardBoxWidget from '../../components/CardBoxWidget'
 const key = 'updatable'
+import { EditOutlined } from '@ant-design/icons'
+
+import Swal from 'sweetalert2'
 const ClassList = () => {
   const router = useRouter()
   const id = router.query.id
-
+  const [users, setUsers] = useState([])
+  const [teacher, setTeacher] = useState('')
+  const [udpateSubject, setUpdateSubject] = useState('')
+  const fetchRoles = async () => {
+    const res: any = await api('/hod/department/student', {
+      headers: {
+        Authorization: GetAccessToken() || null,
+      },
+    })
+    const data = res?.data?.userId
+    console.log(data)
+    const tempRoles = []
+    data?.map((user) => {
+      tempRoles.push({ value: user.id, label: user.email })
+    })
+    setUsers([...tempRoles])
+  }
+  useEffect(() => {
+    fetchRoles()
+  }, [])
   const { searchData } = useAppSelector((state) => state.search)
   //   const { semesters, isLoading, isError, mutate } = useSemester()
-  const { subject, isError, isLoading } = useSubjectById(id)
+  const { subject, isError, isLoading, mutate } = useSubjectById(id)
   useEffect(() => {
     if (!id) {
       return
@@ -91,7 +113,26 @@ const ClassList = () => {
 
   const [isModalInfoActive, setIsModalInfoActive] = useState(false)
   const [isModalTrashActive, setIsModalTrashActive] = useState(false)
+  const showModal = () => {
+    setIsModalOpen(true)
+  }
 
+  const handleOk = () => {
+    api
+      .patch(`/hod/subject/${id}`, { subject_name: udpateSubject, teacherId: teacher })
+      .then((res) => {
+        mutate()
+      })
+      .catch((err) => {
+        console.log(err?.response?.data?.message?.detail)
+        openNotification(err?.response?.data?.message?.detail)
+      })
+    setIsModalOpen(false)
+  }
+
+  const handleCancel = () => {
+    setIsModalOpen(false)
+  }
   const handleModalAction = () => {
     setIsModalInfoActive(false)
     setIsModalTrashActive(false)
@@ -101,7 +142,7 @@ const ClassList = () => {
     <>
       {id && (
         <SectionMain>
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 mb-6">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 mb-6 relative">
             <CardBoxWidget
               key={subject.id}
               trendLabel="Subject Name"
@@ -135,7 +176,53 @@ const ClassList = () => {
               label={subject.teacherId?.firstName + ':' + subject?.teacherId?.lastName}
               number={0}
             />
+            <div className="absolute bg-blue-500 -right-5">
+              <Button
+                type="primary"
+                onClick={() => {
+                  showModal()
+                  // haneUpdate(id)
+                }}
+              >
+                Edit <EditOutlined />
+              </Button>
+            </div>
           </div>
+          <Modal
+            okButtonProps={{
+              style: { backgroundColor: 'blue' },
+            }}
+            title="Basic Modal"
+            open={isModalOpen}
+            onOk={handleOk}
+            onCancel={handleCancel}
+          >
+            <div className="flex flex-col justify-between gap-4">
+              <Input
+                onKeyUp={(e: any) => {
+                  setUpdateSubject(e.target.value)
+                }}
+                placeholder="Basic usage"
+              />
+              <Select
+                // className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                showSearch
+                placeholder="Search to Select"
+                optionFilterProp="children"
+                filterOption={(input, option) => (option?.label ?? '').includes(input)}
+                filterSort={(optionA, optionB) =>
+                  (optionA?.label ?? '')
+                    .toLowerCase()
+                    .localeCompare((optionB?.label ?? '').toLowerCase())
+                }
+                options={users}
+                onChange={(e: any) => {
+                  setTeacher(e)
+                }}
+              />
+            </div>
+          </Modal>
+
           <CardBoxModal
             // title="Sample modal"
             buttonColor="info"

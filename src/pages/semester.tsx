@@ -14,7 +14,7 @@ import BaseDivider from '../components/BaseDivider'
 import { Button, message, Steps, theme } from 'antd'
 import LayoutAuthenticated from '../layouts/Authenticated'
 import { Formik, Form, Field } from 'formik'
-import { notification, Select } from 'antd'
+import { notification, Select, Result } from 'antd'
 import { useSampleClients } from '../hooks/sampleData'
 import { api } from './api/axios'
 import { GetAccessToken } from '../helper/getAccessToken'
@@ -41,12 +41,12 @@ const Departments = () => {
   const [name, setName] = useState('')
   const [users, setUsers] = useState([])
   const fetchRoles = async () => {
-    const res: any = await api('/auth/allusers', {
+    const res: any = await api('/hod/department/student', {
       headers: {
         Authorization: GetAccessToken() || null,
       },
     })
-    const data = res?.data
+    const data = res?.data.userId
     console.log(data)
     const tempRoles = []
     data?.map((user) => {
@@ -98,10 +98,11 @@ const Departments = () => {
               </label>
               <input
                 id="subjectname"
+                value={subjectName}
                 type="text"
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 placeholder="John"
-                onKeyUp={(e: any) => {
+                onChange={(e: any) => {
                   setSubjectName(e.target.value)
                 }}
               />
@@ -135,8 +136,14 @@ const Departments = () => {
       ),
     },
     {
-      title: 'Last',
-      content: 'Last-content',
+      title: 'Complete',
+      content: (
+        <Result
+          status="success"
+          title="Successfully created"
+          // subTitle="Order number: 2017182818828182881 Cloud server configuration takes 1-5 minutes, please wait."
+        />
+      ),
     },
   ]
   const openNotification = (message: string, color?: string) => {

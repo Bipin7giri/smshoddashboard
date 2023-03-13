@@ -214,12 +214,12 @@ const TableSampleClients = () => {
                     }}
                     small
                   />
-                  <BaseButton
+                  {/* <BaseButton
                     color="danger"
                     icon={mdiTrashCan}
                     onClick={() => showConfirm(client.id)}
                     small
-                  />
+                  /> */}
                 </BaseButtons>
               </td>
             </tr>

@@ -19,7 +19,9 @@ import SectionMain from '../components/SectionMain'
 const { confirm } = Modal
 import { Menu, Dropdown } from 'antd'
 import { useRouter } from 'next/router'
+import Swal from 'sweetalert2'
 const key = 'updatable'
+import { EditOutlined } from '@ant-design/icons'
 const SemesterList = () => {
   const { searchData } = useAppSelector((state) => state.search)
   const { semesters, isLoading, isError, mutate } = useSemester()
@@ -30,23 +32,40 @@ const SemesterList = () => {
     })
   }
 
+  const haneUpdate = async (id: any) => {
+    const { value: data } = await Swal.fire({
+      title: 'Input semester name',
+      input: 'text',
+      inputLabel: 'Semester Name',
+      inputPlaceholder: 'Semester Name',
+    })
+
+    if (data) {
+      console.log(data)
+      api
+        .patch(`/hod/semester/${id}`, { name: data })
+        .then((res: any) => {
+          Swal.fire(`${res.data.message}`)
+        })
+        .catch((err) => {
+          Swal.fire(`${err}`)
+        })
+    }
+  }
+
   const showConfirm = (id: any) => {
     confirm({
       content: 'Do you want to block this user?',
       onOk() {
-        openNotification('OKE')
-
-        // api
-        //   .patch('/auth/blockuser', {
-        //     userId: id,
-        //   })
-        //   .then((res) => {
-        //     openNotification(res.data.message)
-        //     mutate(null)
-        //   })
-        //   .catch((err) => {
-        //     openNotification(err.message)
-        //   })
+        api
+          .delete(`/hod/semester/${id}`)
+          .then((res) => {
+            openNotification(res.data.message)
+            mutate(null)
+          })
+          .catch((err) => {
+            openNotification(err.message)
+          })
       },
       onCancel() {
         console.log('Cancel')
@@ -128,7 +147,14 @@ const SemesterList = () => {
             <tbody>
               {semesterPagination?.map((semester: Semester) => (
                 <tr key={semester.id} className="relative">
-                  <td data-label="name">{semester.name}</td>
+                  <td data-label="name">
+                    {semester.name}
+                    <EditOutlined
+                      onClick={() => {
+                        haneUpdate(semester.id)
+                      }}
+                    />
+                  </td>
                   <td data-label="email">
                     <div className="flex">
                       <div>
