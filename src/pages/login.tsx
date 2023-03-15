@@ -56,7 +56,7 @@ export default function Login() {
         console.log('test')
         setIsLoading(true)
         api
-          .post('/auth/login', values)
+          .post('/auth/hod/login', values)
           .then((response) => {
             console.log(response)
             openNotification(response?.data?.message)

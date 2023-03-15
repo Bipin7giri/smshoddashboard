@@ -7,9 +7,6 @@ import BaseButtons from '../components/BaseButtons'
 import CardBoxModal from '../components/CardBoxModal'
 import { Modal } from 'antd'
 import { useAppSelector } from '../stores/hooks'
-import { Avatar } from 'antd'
-import { Select } from 'antd'
-import { GetAccessToken } from '../helper/getAccessToken'
 import { api } from './api/axios'
 import moment from 'moment'
 import { notification } from 'antd'
@@ -39,6 +36,9 @@ const SemesterList = () => {
       inputLabel: 'Semester Name',
       inputPlaceholder: 'Semester Name',
     })
+    const handleAddSubject = async ()=>{
+
+    }
 
     if (data) {
       console.log(data)
