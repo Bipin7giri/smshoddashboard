@@ -67,7 +67,10 @@ const Notification = () => {
                         }}
                         onSubmit={(values) => {
                           api
-                            .post('/admin/notification', { title: values.title, body: values.body })
+                            .post('/department/notification', {
+                              title: values.title,
+                              body: values.body,
+                            })
                             .then((res) => {
                               openNotification(res.data.message)
                             })
