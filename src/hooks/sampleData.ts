@@ -57,7 +57,7 @@ export const useSampleTransactions = () => {
 export const useNotificationList = () => {
   const { data, error } = useSWR('/department/notification', fetcher)
   return {
-    notification: data?.data ?? [],
+    notification: data ?? [],
     isLoading: !error && !data,
     isError: error,
   }
