@@ -25,7 +25,7 @@ export const useDepartments = () => {
     isError: error,
   }
 }
-
+// /semester/users
 export const useSemester = () => {
   const { data, error, mutate } = useSWR('/hod/semester', fetcher)
   return {
@@ -33,6 +33,15 @@ export const useSemester = () => {
     semesters: data ?? [],
     isLoading: !error && !data,
     isError: error,
+  }
+}
+export const useSemesterStatus = () => {
+  const { data, error, mutate } = useSWR('/stats/semester/users', fetcher)
+  return {
+    mutate,
+    semestersStats: data ?? [],
+    isLoadingSemesterStats: !error && !data,
+    isErrorSemesterError: error,
   }
 }
 

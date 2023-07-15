@@ -1,4 +1,4 @@
-import { mdiAccountMultiple, mdiBookEducation } from '@mdi/js'
+import { mdiAccountMultiple, mdiBookEducation, mdiListStatus } from '@mdi/js'
 import Head from 'next/head'
 import React, { useEffect, useState } from 'react'
 import type { ReactElement } from 'react'
@@ -6,7 +6,7 @@ import LayoutAuthenticated from '../layouts/Authenticated'
 import SectionMain from '../components/SectionMain'
 import SectionTitleLineWithButton from '../components/SectionTitleLineWithButton'
 import CardBoxWidget from '../components/CardBoxWidget'
-import { useDepartments, useSemester } from '../hooks/sampleData'
+import { useDepartments, useSemester, useSemesterStatus } from '../hooks/sampleData'
 import { Department, Semester } from '../interfaces'
 import CardBox from '../components/CardBox'
 import { sampleChartData } from '../components/ChartLineSample/config'
@@ -15,32 +15,9 @@ import { getPageTitle } from '../config'
 import { Button, Card, Modal, notification, Upload, message } from 'antd'
 import { UploadOutlined } from '@ant-design/icons'
 import type { UploadProps } from 'antd'
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  PointElement,
-  ArcElement,
-} from 'chart.js'
-import { Bar, Doughnut, Pie } from 'react-chartjs-2'
-import PieChart from '../components/charts/PieChart'
-import DoughnutChart from '../components/charts/DoughnutChart'
 import { GetAccessToken } from '../helper/getAccessToken'
+import Chart from '../components/charts/Charts'
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  PointElement,
-  ArcElement
-)
 
 const openNotification = (message: string) => {
   notification.open({
@@ -55,74 +32,9 @@ const openNotification = (message: string) => {
 
 const Dashboard = () => {
   const { semesters, isLoading, isError } = useSemester()
+  const { isErrorSemesterError,isLoadingSemesterStats,mutate,semestersStats } = useSemesterStatus()
+console.log(semestersStats)
 
-  const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July']
-  const [data, setData] = useState({
-    labels: labels,
-    datasets: [
-      {
-        label: 'Expenses by Month',
-        data: [65, 59, 80, 81, 56, 55, 40],
-        backgroundColor: ['rgba(225, 99, 132, 2.2)'],
-        borderColor: ['rgb(153, 102, 255)'],
-        borderWidth: 1,
-      },
-    ],
-  })
-
-  const pieData = {
-    labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-    datasets: [
-      {
-        label: '# of Votes',
-        data: [12, 19, 3, 5, 2, 3],
-        backgroundColor: [
-          'rgba(255, 99, 132, 0.2)',
-          'rgba(54, 162, 235, 0.2)',
-          'rgba(255, 206, 86, 0.2)',
-          'rgba(75, 192, 192, 0.2)',
-          'rgba(153, 102, 255, 0.2)',
-          'rgba(255, 159, 64, 0.2)',
-        ],
-        borderColor: [
-          'rgba(255, 99, 132, 1)',
-          'rgba(54, 162, 235, 1)',
-          'rgba(255, 206, 86, 1)',
-          'rgba(75, 192, 192, 1)',
-          'rgba(153, 102, 255, 1)',
-          'rgba(255, 159, 64, 1)',
-        ],
-        borderWidth: 1,
-      },
-    ],
-  }
-
-  const doughnutData = {
-    labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-    datasets: [
-      {
-        label: '# of Votes',
-        data: [12, 19, 3, 5, 2, 3],
-        backgroundColor: [
-          'rgba(255, 99, 132, 0.2)',
-          'rgba(54, 162, 235, 0.2)',
-          'rgba(255, 206, 86, 0.2)',
-          'rgba(75, 192, 192, 0.2)',
-          'rgba(153, 102, 255, 0.2)',
-          'rgba(255, 159, 64, 0.2)',
-        ],
-        borderColor: [
-          'rgba(255, 99, 132, 1)',
-          'rgba(54, 162, 235, 1)',
-          'rgba(255, 206, 86, 1)',
-          'rgba(75, 192, 192, 1)',
-          'rgba(153, 102, 255, 1)',
-          'rgba(255, 159, 64, 1)',
-        ],
-        borderWidth: 1,
-      },
-    ],
-  }
 
   useEffect(() => {
     if (isError) {
@@ -196,6 +108,15 @@ const Dashboard = () => {
         </Upload>
       </Modal>
       <SectionMain>
+
+
+      <SectionTitleLineWithButton
+          icon={mdiListStatus}
+          title="System Graphical Status"
+        ></SectionTitleLineWithButton>
+        <div>
+          <Chart data={semestersStats} />
+        </div>
         <SectionTitleLineWithButton icon={mdiBookEducation} title="Department">
           <Button
             className="bg-[#3b82f6] text-white hover:text-white hover:bg-blue-300"
@@ -218,11 +139,6 @@ const Dashboard = () => {
               number={0}
             />
           ))}
-        </div>
-        <div className="flex justify-between gap-x-5 items-center w-[300px]">
-          <PieChart data={pieData} />
-          <Bar data={data} />
-          <DoughnutChart data={doughnutData} />
         </div>
         <SectionTitleLineWithButton icon={mdiAccountMultiple} title="Users" />
         <CardBox hasTable>
