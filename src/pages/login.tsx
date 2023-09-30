@@ -26,8 +26,6 @@ type VALUES = {
 const openNotification = (message: string) => {
   notification.open({
     message: message,
-    description:
-      'This is the content of the notification. This is the content of the notification. This is the content of the notification.',
     onClick: () => {
       console.log('Notification Clicked!')
     },
@@ -53,7 +51,6 @@ export default function Login() {
       if (
         /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(values.email)
       ) {
-        console.log('test')
         setIsLoading(true)
         api
           .post('/auth/hod/login', values)
@@ -107,20 +104,10 @@ export default function Login() {
               </FormField>
               <p className="text-red-400"> {error.password}</p>
 
-              <div className="flex justify-between">
-                <FormCheckRadio type="checkbox" label="Remember">
-                  <Field type="checkbox" name="remember" />
-                </FormCheckRadio>
-                <button onClick={() => handleRegister()} className="font-mono">
-                  Register Now
-                </button>
-              </div>
-
               <BaseDivider />
 
               <BaseButtons>
                 <BaseButton type="submit" label="Login" color="info" />
-                <BaseButton href="/dashboard" label="Home" color="info" outline />
               </BaseButtons>
             </Form>
           </Formik>

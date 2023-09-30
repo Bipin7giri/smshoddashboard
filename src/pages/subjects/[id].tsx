@@ -202,12 +202,12 @@ const ClassList = () => {
                 onKeyUp={(e: any) => {
                   setUpdateSubject(e.target.value)
                 }}
-                placeholder="Basic usage"
+                placeholder="Subject Name"
               />
               <Select
                 // className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 showSearch
-                placeholder="Search to Select"
+                placeholder="Search to Select Teacher"
                 optionFilterProp="children"
                 filterOption={(input, option) => (option?.label ?? '').includes(input)}
                 filterSort={(optionA, optionB) =>
@@ -283,7 +283,6 @@ const ClassList = () => {
                 <th>Address</th>
                 <th>Contact</th>
                 <th>Joined</th>
-                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -304,16 +303,6 @@ const ClassList = () => {
                     <span className="text-gray-700">
                       {moment(client.studentId.createdAt).fromNow()}
                     </span>
-                  </td>
-                  <td className="before:hidden lg:w-1 whitespace-nowrap">
-                    <BaseButtons type="justify-start lg:justify-end" noWrap>
-                      <BaseButton
-                        color="danger"
-                        icon={mdiTrashCan}
-                        onClick={() => showConfirm(client.id)}
-                        small
-                      />
-                    </BaseButtons>
                   </td>
                 </tr>
               ))}
